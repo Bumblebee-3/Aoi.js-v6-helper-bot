@@ -1,0 +1,19 @@
+{
+  "name": "aoi.js helper bot",
+  "version": "0.3",
+  "description": "A aoi.js helper bot, which gives usage of functions and other data.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^18.0.6",
+    "aoi.js": "^6.1.1",
+    "discord.js": "^14.7.1",
+    "express": "^4.18.2",
+    "node-fetch": "^3.2.6"
+  }
+}
