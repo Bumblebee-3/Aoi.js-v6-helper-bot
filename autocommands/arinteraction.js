@@ -1,4 +1,4 @@
-const { Client, Events, GatewayIntentBits, ActionRowBuilder, StringSelectMenuBuilder, AttachmentBuilder, Collection } = require('discord.js');
+const { Events, AttachmentBuilder,ActionRowBuilder,ButtonBuilder, ButtonStyle  } = require('discord.js');
 const fs = require("fs")
 const path = require("path")
 
@@ -13,6 +13,9 @@ module.exports = {
         var func = bot.functionManager.cache.get(interaction.values[0])
         if (!func) return await interaction.reply("Cannot find function `" + interaction.values[0] + "`!")
         const code = func.code.toString()
+        const response = await fetch('https://aoijs-api.bumblebeerox1.repl.co/api/aoijs/function?name='+interaction.values[0]);
+        const data = await response.json();
+
         var fcode = "";
         if (code.length >= 1024) {
           fcode = "File is too big to send in embed!"
@@ -22,72 +25,43 @@ module.exports = {
         }
 
 
-
-        function getUsage() {
-          const lines = code.split("\n");
-          var dat = lines.findIndex(x => x.includes("let ["));
-          if(dat==-1){
-            dat = lines.findIndex(x => x.includes("const ["))
-          }
-          const index = lines.findIndex(x => x.includes("inside.splits"));
-          if (dat == index) {
-            if (index != -1) {
-              return "$" + interaction.values[0] + "[" + lines[index].split("[")[1].split("]")[0].replace(/,/g, ";") + "]".replace(/ /g, "");
-            } else {
-              return "Usage not found"
-            }
-          }
-          else {
-            let str = interaction.values[0] + "[";
-            if(dat==-1)return "Usage not found!"
-
-            for (var i = dat + 1; i < index; i++) {
-              str = str + lines[i]
-            }
-            return str + "]".replace(/\t/g, "").replace(/ /g, "")
-          }
-        }
-        let use = getUsage()
-
-        const exampleEmbed = {
+        var exampleEmbed = {
           color: 0x0099ff,
-          title: 'Function Usage',
+          title: 'Function Usage of $'+interaction.values[0],
 
-          description: `Function Usage of **__$${interaction.values[0]}__**`,
+          description: `${data.desc}`,
 
           fields: [
             {
               name: '**Usage:**',
-              value: `\`\`\`${use}\`\`\``,
+              value: `\`\`\`${data.usage}\`\`\``,
               inline: false,
             },
             {
               name: '**Code:**',
               value: `\`\`\`js\n${fcode}\n\`\`\``,
               inline: false,
-            },
-
+            },{
+              name: '**Example:**',
+              value: `${data.example}`,
+              inline: false,
+            }
           ],
           timestamp: new Date().toISOString(),
         };
-        let data = require("../data/a.json")
-            for(i=0;i<data.length;i++){
-              if(data[i].func==interaction.values[0]){
-                exampleEmbed.url="https://aoi.js.org/docs/functions/"+(data[i].type.charAt(0).toUpperCase() + data[i].type.slice(1))+"/"+data[i].func
-                exampleEmbed.fields.push({
-              name: '**Type:**',
-              value: `${data[i].type}`,
-              inline: false,
-            })
-                exampleEmbed.fields.push({
-              name: '**Link:**',
-              value: `[${"https://aoi.js.org/docs/functions/"+(data[i].type.charAt(0).toUpperCase() + data[i].type.slice(1))+"/"+data[i].func}](${"https://aoi.js.org/docs/functions/"+(data[i].type.charAt(0).toUpperCase() + data[i].type.slice(1))+"/"+data[i].func})`,
-              inline: false,
-            })
-              }
-            }
+        const row = new ActionRowBuilder()
+			.addComponents(
+				new ButtonBuilder()
+					.setURL(data.link)
+					.setLabel('Docs!')
+					.setStyle(ButtonStyle.Link),
+        new ButtonBuilder()
+					.setURL(data.src)
+					.setLabel('Source Code!')
+					.setStyle(ButtonStyle.Link)
+			);
         if (fcode == code) {
-          await interaction.reply({ embeds: [exampleEmbed], ephemeral: true });
+          await interaction.reply({ embeds: [exampleEmbed], ephemeral: true ,components: [row]});
         }
         else {
           fs.appendFile(__dirname.replace("/autocommands", "") + "/data/" + interaction.values[0].replace("$", "") + ".js", code, function(err) {
@@ -97,7 +71,7 @@ module.exports = {
 
           const attachment = new AttachmentBuilder(__dirname.replace("/autocommands", "") + "/data/" + interaction.values[0].replace("$", "") + ".js", { name: interaction.values[0].replace("$", "") + '.js' })
 
-          await interaction.reply({ embeds: [exampleEmbed], ephemeral: true, files: [attachment] });
+          await interaction.reply({ embeds: [exampleEmbed], ephemeral: true, files: [attachment],components: [row] });
 
         }
 

@@ -1,4 +1,4 @@
-const { Client, Events, GatewayIntentBits, ActionRowBuilder, StringSelectMenuBuilder, AttachmentBuilder, Collection } = require('discord.js');
+const {  ActionRowBuilder, StringSelectMenuBuilder, AttachmentBuilder,ButtonBuilder, ButtonStyle } = require('discord.js');
 const fs = require("fs")
 const path = require("path")
 
@@ -90,75 +90,47 @@ module.exports = {
         else {
           fcode = code
         }
+        const response = await fetch('https://aoijs-api.bumblebeerox1.repl.co/api/aoijs/function?name='+f[0]);
+        const data = await response.json();
 
-
-        function getUsage() {
-          const lines = code.split("\n")
-          var dat = lines.findIndex(x => x.includes("let ["));
-          if(dat==-1){
-            dat = lines.findIndex(x => x.includes("const ["))
-          }
-          
-          
-          const index = lines.findIndex(x => x.includes("inside.splits"));
-          if (dat == index) {
-            if (index != -1) {
-              return f[0] + "[" + lines[index].split("[")[1].split("]")[0].replace(/,/g, ";") + "]".replace(/ /g, "");
-            } else {
-              return "Usage not found"
-            }
-          }
-          else {
-            
-            let str = f[0] + "[";
-            if(dat==-1)return "Usage not found!"
-            for (var i = dat + 1; i < index; i++) {
-              str = str + lines[i]
-            }
-            return str + "]"
-          }
-        }
-        let use = getUsage()
 
         var exampleEmbed = {
           color: 0x0099ff,
-          title: 'Function Usage',
+          title: 'Function Usage of '+f[0],
 
-          description: `Function Usage of **__${f[0]}__**`,
+          description: `${data.desc}`,
 
           fields: [
             {
               name: '**Usage:**',
-              value: `\`\`\`${use}\`\`\``,
+              value: `\`\`\`${data.usage}\`\`\``,
               inline: false,
             },
             {
               name: '**Code:**',
               value: `\`\`\`js\n${fcode}\n\`\`\``,
               inline: false,
-            },
-
+            },{
+              name: '**Example:**',
+              value: `${data.example}`,
+              inline: false,
+            }
           ],
           timestamp: new Date().toISOString(),
         };
-        let data = require("../data/a.json")
-            for(i=0;i<data.length;i++){
-              if(data[i].func==f[0].replace("$","")){
-                exampleEmbed.url="https://aoi.js.org/docs/functions/"+(data[i].type.charAt(0).toUpperCase() + data[i].type.slice(1))+"/"+data[i].func
-                exampleEmbed.fields.push({
-              name: '**Type:**',
-              value: `${data[i].type}`,
-              inline: false,
-            })
-                exampleEmbed.fields.push({
-              name: '**Link:**',
-              value: `[${"https://aoi.js.org/docs/functions/"+(data[i].type.charAt(0).toUpperCase() + data[i].type.slice(1))+"/"+data[i].func}](${"https://aoi.js.org/docs/functions/"+(data[i].type.charAt(0).toUpperCase() + data[i].type.slice(1))+"/"+data[i].func})`,
-              inline: false,
-            })
-              }
-            }
+        const row = new ActionRowBuilder()
+			.addComponents(
+				new ButtonBuilder()
+					.setURL(data.link)
+					.setLabel('Docs!')
+					.setStyle(ButtonStyle.Link),
+        new ButtonBuilder()
+					.setURL(data.src)
+					.setLabel('Source Code!')
+					.setStyle(ButtonStyle.Link)
+			);
         if (fcode == code) {
-          message.reply({ embeds: [exampleEmbed] });
+          message.reply({ embeds: [exampleEmbed],components: [row] });
         }
         else {
           fs.appendFile(__dirname.replace("/autocommands", "") + "/data/" + f[0].replace("$", "") + ".js", code, function(err) {
@@ -167,7 +139,7 @@ module.exports = {
           });
 
           const attachment = new AttachmentBuilder(__dirname.replace("/autocommands", "") + "/data/" + f[0].replace("$", "") + ".js", { name: f[0].replace("$", "") + '.js' })
-          message.reply({ embeds: [exampleEmbed] });
+          message.reply({ embeds: [exampleEmbed],components: [row] });
           message.channel.send({ files: [attachment] })
         }
 

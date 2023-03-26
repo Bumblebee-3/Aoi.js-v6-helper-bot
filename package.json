@@ -1,6 +1,6 @@
 {
   "name": "aoi.js helper bot",
-  "version": "0.3",
+  "version": "0.4",
   "description": "A aoi.js helper bot, which gives usage of functions and other data.",
   "main": "index.js",
   "scripts": {

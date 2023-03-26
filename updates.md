@@ -4,3 +4,5 @@ Basic functions usage, code.
 Multiple functions support, fixed some usage bugs.
 # v0.3
 Added Link reference to each functions docs
+# v0.4
+Scraping api now, takes all details from the documentation.
