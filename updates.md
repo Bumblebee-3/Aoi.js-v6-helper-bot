@@ -6,3 +6,5 @@ Multiple functions support, fixed some usage bugs.
 Added Link reference to each functions docs
 # v0.4
 Scraping api now, takes all details from the documentation.
+# v0.5-dev
+Multi-function codes will return pagination.
