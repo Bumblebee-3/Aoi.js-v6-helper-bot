@@ -8,5 +8,5 @@ Read `updates.md` for changelog
 
 ### This is the most stable version.
 You can also use the `v0.5-dev` version for pagination.
-
+Link [here](https://github.com/Bumblebee-3/Aoi.js-v6-helper-bot/tree/v0.5-dev)
 ### Made with <3 and Discord.js by Bumblebee a.k.a. Blurr#1447
