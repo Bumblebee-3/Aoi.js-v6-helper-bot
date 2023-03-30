@@ -6,4 +6,7 @@
 
 Read `updates.md` for changelog
 
+### This is the most stable version.
+You can also use the `v0.5-dev` version for pagination.
+
 ### Made with <3 and Discord.js by Bumblebee a.k.a. Blurr#1447
